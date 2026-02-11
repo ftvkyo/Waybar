@@ -33,12 +33,18 @@ void Workspaces::doUpdate() {
   auto ipcLock = gIPC->lockData();
 
   const auto alloutputs = config_["all-outputs"].asBool();
+
+  auto output = bar_.output->name;
+  if (config_["output"].isString()) {
+    output = config_["output"].asString();
+  }
+
   std::vector<Json::Value> my_workspaces;
   const auto& workspaces = gIPC->workspaces();
   std::copy_if(workspaces.cbegin(), workspaces.cend(), std::back_inserter(my_workspaces),
                [&](const auto& ws) {
                  if (alloutputs) return true;
-                 return ws["output"].asString() == bar_.output->name;
+                 return ws["output"].asString() == output;
                });
 
   // Remove buttons for removed workspaces.
